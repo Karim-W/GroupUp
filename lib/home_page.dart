@@ -6,6 +6,7 @@ import 'Classes/Room.dart';
 import 'authentication_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 class Constants {
   static const String FirstItem = 'Create a Course Room';
@@ -17,6 +18,12 @@ class Constants {
     SecondItem,
   ];
 }
+
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
 class HomePage extends StatefulWidget {
   HomePage({this.app});
@@ -46,15 +53,6 @@ Material nothing() {
   );
 }
 
-final List<Color> colors = [
-  Colors.red[500],
-  Colors.orange,
-  Colors.yellow,
-  Colors.green,
-  Colors.blue,
-  Colors.purple
-];
-final List<room> roomIds = [];
 Material displayRooms(List<room> rs) {
   return Material(
       child: Padding(
@@ -65,23 +63,25 @@ Material displayRooms(List<room> rs) {
                     SliverChildListDelegate(List.generate(rs.length, (index) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: roomWidget(roomIds[index], index),
+                child: roomWidget(rs[index], index),
               );
             })))
           ])));
 }
 
 Material roomWidget(room R, int i) {
-  Color c = colors[i % colors.length];
   return Material(
       elevation: 22,
       borderRadius: BorderRadius.circular(24.0),
-      color: colors[i % colors.length],
-      child: Container(
+      color: Colors.blue[900],
+      child: InkWell(
+        onTap: () {},
+        child: Container(
           height: 200,
           width: 200,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24.0),
+
             // gradient: LinearGradient(colors: [
             //   Colors.transparent,
             //   c,
@@ -94,18 +94,164 @@ Material roomWidget(room R, int i) {
             //   c,
             //   Colors.transparent
             // ], begin: Alignment.topRight, end: Alignment.bottomRight)
-          )));
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Text(
+                    R.className,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Text(
+                  "CRN:" + R.courseID,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                Spacer(),
+                Row(
+                  children: [
+                    Spacer(),
+                    InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      child: Material(
+                        elevation: 19,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: (R.grouped) ? Colors.orange[400] : Colors.grey,
+                        child: Container(
+                          height: 50,
+                          width: 220,
+                          child: Center(
+                              child: Text(
+                            R.groupname,
+                            style: TextStyle(
+                                color:
+                                    (R.grouped) ? Colors.black : Colors.white70,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          )),
+                        ),
+                      ),
+                    ),
+                    Spacer(
+                      flex: 19,
+                    ),
+                    Column(
+                      children: [
+                        Icon(
+                          Icons.perm_identity,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          R.availStudents.toString() +
+                              "/" +
+                              R.totalStudents.toString(),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Text(
+                          "available",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Spacer(
+                      flex: 20,
+                    ),
+                    Column(
+                      children: [
+                        Icon(
+                          Icons.group_work,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          R.availGroups.toString() + " groups",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Text(
+                          "available",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                Spacer(),
+              ],
+            ),
+          ),
+        ),
+      ));
 }
 
 class _myHomePageState extends State<HomePage> {
-  List<String> LocationIds = [];
-  //List<Room> Rooms = [];
-  List<int> vioArr = [3, 5, 2, 1, 0];
+  _myHomePageState();
+  final List<String> roomIds = [];
+  final List<room> rooms = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    DatabaseReference Dbref = FirebaseDatabase.instance
+        .reference()
+        .child("users")
+        .child(FirebaseAuth.instance.currentUser.uid)
+        .child("rooms");
 
+    Dbref.onValue.listen((event) {
+      roomIds.clear();
+      rooms.clear();
+      var dataSnapShot = event.snapshot;
+      var keys = dataSnapShot.value.keys;
+      var values = dataSnapShot.value;
+      for (var key in keys) {
+        roomIds.add(key);
+        print(values[key]);
+        var gname = "Not Grouped";
+        DatabaseReference re = FirebaseDatabase.instance
+            .reference()
+            .child("groups")
+            .child(values[key]);
+        re.onValue.listen((event) {
+          var dataSnapSho = event.snapshot;
+          var ke = dataSnapSho.value.keys;
+          var valu = dataSnapSho.value;
+          print(valu['gName']);
+          gname = valu['gName'];
+        });
+        DatabaseReference ref =
+            FirebaseDatabase.instance.reference().child("rooms").child(key);
+        ref.onValue.listen((event) {
+          var dataSnapShots = event.snapshot;
+          var keyse = dataSnapShots.value.keys;
+          var valuese = dataSnapShots.value;
+          var t = (values[key] == "n/a") ? false : true;
+          room rl = new room(
+              valuese['cName'],
+              valuese['cID'],
+              valuese['avail_groups'],
+              valuese['avail_Students'],
+              valuese['tot_Students'],
+              t,
+              gname);
+          print(gname);
+          rooms.add(rl);
+        });
+      }
+    });
     setState(() {});
   }
 
@@ -123,9 +269,9 @@ class _myHomePageState extends State<HomePage> {
       }
     }
 
-    room r = new room("Software NGN", "", "", 0, 0);
-    roomIds.add(r);
-    return new Scaffold(
+    print(rooms);
+    print(roomIds);
+    return Scaffold(
       //backgroundColor: Color(0xff0B0500),
       appBar: new AppBar(
         backgroundColor: Colors.transparent,
@@ -163,7 +309,7 @@ class _myHomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: (roomIds.isEmpty) ? nothing() : displayRooms(roomIds),
+      body: (roomIds.isEmpty) ? nothing() : displayRooms(rooms),
     );
   }
 }

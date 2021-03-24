@@ -1,6 +1,8 @@
 class room {
-  String className, courseID, groupID;
-  int availStudents, availGroups;
-  room(this.className, this.courseID, this.groupID, this.availGroups,
-      this.availStudents);
+  String className, courseID, groupname;
+  int availStudents, availGroups, totalStudents;
+  bool grouped;
+
+  room(this.className, this.courseID, this.availGroups, this.availStudents,
+      this.totalStudents, this.grouped, this.groupname);
 }
