@@ -259,10 +259,10 @@ class SignInPage extends StatelessWidget {
       print(fnameController.text);
       print(fnameController.text);
       dbRef.child(result.user.uid).set({
-        "Email": emailController.text.trim(),
-        "First_Name": fnameController.text.trim(),
-        "Last_Name": lnameController.text.trim(),
-        "Phone": phoneController.text.trim(),
+        "email": emailController.text.trim(),
+        "fname": fnameController.text.trim(),
+        "lame": lnameController.text.trim(),
+        "phone": phoneController.text.trim(),
       }).then((res) {
         //isLoading = false;
         Navigator.of(context).pop();

@@ -1,3 +1,4 @@
+import 'package:GroupUp/courseRoomView.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -53,7 +54,7 @@ Material nothing() {
   );
 }
 
-Material displayRooms(List<room> rs) {
+Material displayRooms(List<room> rs, BuildContext c) {
   return Material(
       child: Padding(
           padding: EdgeInsets.all(8),
@@ -63,19 +64,26 @@ Material displayRooms(List<room> rs) {
                     SliverChildListDelegate(List.generate(rs.length, (index) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: roomWidget(rs[index], index),
+                child: roomWidget(rs[index], index, c),
               );
             })))
           ])));
 }
 
-Material roomWidget(room R, int i) {
+Material roomWidget(room R, int i, BuildContext c) {
   return Material(
       elevation: 22,
       borderRadius: BorderRadius.circular(24.0),
       color: Colors.blue[900],
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+              c,
+              MaterialPageRoute(
+                  builder: (context) => cRV(
+                        room: R,
+                      )));
+        },
         child: Container(
           height: 200,
           width: 200,
@@ -107,7 +115,7 @@ Material roomWidget(room R, int i) {
                     R.className,
                     textAlign: TextAlign.left,
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -246,7 +254,8 @@ class _myHomePageState extends State<HomePage> {
               valuese['avail_Students'],
               valuese['tot_Students'],
               t,
-              gname);
+              gname,
+              key.toString());
           print(gname);
           rooms.add(rl);
         });
@@ -269,6 +278,15 @@ class _myHomePageState extends State<HomePage> {
       }
     }
 
+    Future.delayed(const Duration(milliseconds: 500), () {
+// Here you can write your code
+
+      setState(() {
+        // Here you can write your code for open new view
+      });
+      dispose();
+    });
+
     print(rooms);
     print(roomIds);
     return Scaffold(
@@ -279,7 +297,9 @@ class _myHomePageState extends State<HomePage> {
         leading: IconButton(
           icon: Icon(Icons.menu),
           color: Colors.black,
-          onPressed: () {},
+          onPressed: () {
+            context.read<AuthenticationService>().signOut();
+          },
         ),
         title: Text(
           "Home",
@@ -309,7 +329,7 @@ class _myHomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: (roomIds.isEmpty) ? nothing() : displayRooms(rooms),
+      body: (roomIds.isEmpty) ? nothing() : displayRooms(rooms, context),
     );
   }
 }
