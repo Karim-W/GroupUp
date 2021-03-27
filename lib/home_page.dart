@@ -1,3 +1,4 @@
+import 'package:GroupUp/Requests.dart';
 import 'package:GroupUp/courseRoomView.dart';
 import 'package:GroupUp/userSettings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -378,7 +379,10 @@ class _myHomePageState extends State<HomePage> {
               Container(
                 height: 50,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => req()));
+                  },
                   child: Row(
                     children: [
                       Spacer(

@@ -1,6 +1,7 @@
 // TODO Implement this library.
 import 'package:GroupUp/Classes/Group.dart';
 import 'package:GroupUp/Classes/Room.dart';
+import 'package:GroupUp/UserProfileView.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -214,7 +215,15 @@ class _cRV extends State<cRV> {
                           itemBuilder: (context, index) {
                             return ListTile(
                                 trailing: Icon(Icons.arrow_forward),
-                                onTap: () {},
+                                onTap: () {
+                                  (label == "students")
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  upv(sIDs.elementAt(index))))
+                                      : groups.elementAt(index);
+                                },
                                 title: Text((label == "students")
                                     ? students.elementAt(index)
                                     : groups.elementAt(index)));
