@@ -1,3 +1,4 @@
+import 'package:GroupUp/Classes/req.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -19,39 +20,27 @@ class reqView extends StatefulWidget {
 class _reqView extends State<reqView> {
   _reqView({this.rid});
   final rid;
+  request rEQ;
   void initState() {
+    super.initState();
     DatabaseReference Dbref =
         FirebaseDatabase.instance.reference().child("reqs").child(rid);
-    // super.initState();
-    // courses.clear();
-    // rID.clear();
-    // from.clear();
-    // setState(() {});
-    // DatabaseReference Dbref = FirebaseDatabase.instance
-    //     .reference()
-    //     .child("users")
-    //     .child(FirebaseAuth.instance.currentUser.uid)
-    //     .child("req");
-    // Dbref.onValue.listen((event) {
-    //   var dataSnapShot = event.snapshot;
-    //   var keys = dataSnapShot.value.keys;
-    //   var values = dataSnapShot.value;
-    //   var r = keys.toList();
-    //   for (var i in r) {
-    //     rID.add(i.toString());
-    //     DatabaseReference Dbre = FirebaseDatabase.instance
-    //         .reference()
-    //         .child("users")
-    //         .child(FirebaseAuth.instance.currentUser.uid)
-    //         .child("req")
-    //         .child(i.toString());
-    //     print("ayyyy" + i.toString());
-    //     print(values[i]['from']);
-    //     courses.add(values[i]['Course']);
-    //     from.add(values[i]['from']);
-    //   }
-    //   setState(() {});
-    // });
+    Dbref.onValue.listen((event) {
+      var dataSnapShot = event.snapshot;
+      var keys = dataSnapShot.value.keys;
+      var values = dataSnapShot.value;
+      rEQ = new request(
+          rid,
+          values['gID'],
+          values['cID'],
+          values['fromID'],
+          values['toID'],
+          values['msg'],
+          values['from'],
+          values['cName'],
+          values['gName']);
+      setState(() {});
+    });
   }
 
   String _storeID;
@@ -83,7 +72,22 @@ class _reqView extends State<reqView> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 16.0, left: 8, bottom: 8),
-            child: Row(children: [Text("From: ")]),
+            child: Row(children: [
+              Text(
+                "From: ",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              Text(
+                rEQ.sender,
+                style: TextStyle(fontSize: 20),
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(Icons.perm_identity),
+                onPressed: () {},
+                splashRadius: 1,
+              )
+            ]),
           ),
           Divider(
             height: 5,
@@ -91,7 +95,22 @@ class _reqView extends State<reqView> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, left: 8, bottom: 8),
-            child: Row(children: [Text("Group: ")]),
+            child: Row(children: [
+              Text(
+                "Group: ",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              Text(
+                rEQ.groupN,
+                style: TextStyle(fontSize: 20),
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(Icons.group),
+                onPressed: () {},
+                splashRadius: 1,
+              )
+            ]),
           ),
           Divider(
             height: 5,
@@ -99,12 +118,73 @@ class _reqView extends State<reqView> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16.0, left: 8, bottom: 8),
-            child: Row(children: [Text("Course: ")]),
+            child: Row(children: [
+              Text(
+                "Course: ",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              Text(
+                rEQ.courseName,
+                style: TextStyle(fontSize: 20),
+              )
+            ]),
           ),
           Divider(
             height: 5,
             color: Colors.black,
           ),
+          // Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Text(
+                  rEQ.msg,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+          Spacer(
+            flex: 10,
+          ),
+          Row(
+            children: [
+              Spacer(),
+              Column(
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.check_circle_outline),
+                      iconSize: 70,
+                      color: Colors.green,
+                      onPressed: () {}),
+                  Text(
+                    "Accept",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              Spacer(),
+              Column(
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.highlight_off_rounded),
+                      iconSize: 70,
+                      color: Colors.red,
+                      onPressed: () {}),
+                  Text(
+                    "Accept",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              Spacer()
+            ],
+          ),
+          Spacer(
+            flex: 1,
+          )
         ],
       ),
     );
