@@ -87,13 +87,15 @@ class _cRV extends State<cRV> {
   List<String> sIDs = [];
   List<String> groups = [];
   List<String> gIDs = [];
+
   @override
   void initState() {
     super.initState();
-    students.cast();
-    sIDs.cast();
-    groups.cast();
-    gIDs.cast();
+    // students.cast();
+    // sIDs.cast();
+    // groups.cast();
+    // gIDs.cast();
+
     myGroup = new group("", "", null, 0);
     final databaseReference = FirebaseDatabase.instance;
     DatabaseReference Dbref = FirebaseDatabase.instance
@@ -220,8 +222,10 @@ class _cRV extends State<cRV> {
                                       ? Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  upv(sIDs.elementAt(index))))
+                                              builder: (context) => upv(
+                                                  sIDs.elementAt(index),
+                                                  CR,
+                                                  myGroup)))
                                       : groups.elementAt(index);
                                 },
                                 title: Text((label == "students")

@@ -1,3 +1,4 @@
+import 'package:GroupUp/viewReq.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -28,7 +29,7 @@ class _req extends State<req> {
         .reference()
         .child("users")
         .child(FirebaseAuth.instance.currentUser.uid)
-        .child("req");
+        .child("reqs");
     Dbref.onValue.listen((event) {
       var dataSnapShot = event.snapshot;
       var keys = dataSnapShot.value.keys;
@@ -36,12 +37,6 @@ class _req extends State<req> {
       var r = keys.toList();
       for (var i in r) {
         rID.add(i.toString());
-        DatabaseReference Dbre = FirebaseDatabase.instance
-            .reference()
-            .child("users")
-            .child(FirebaseAuth.instance.currentUser.uid)
-            .child("req")
-            .child(i.toString());
         print("ayyyy" + i.toString());
         print(values[i]['from']);
         courses.add(values[i]['Course']);
@@ -82,15 +77,15 @@ class _req extends State<req> {
             return ListTile(
                 trailing: Icon(Icons.arrow_forward),
                 onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => violationView(
-                  //             violationInst: violations.elementAt(index),
-                  //             longCord: LongCord,
-                  //             latCord: LatCord)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => reqView(rID.elementAt(index))));
                 },
-                title: Text("From " + from.elementAt(index)));
+                title: Text("From " +
+                    from.elementAt(index) +
+                    " in " +
+                    courses.elementAt(index)));
           }),
     );
   }
