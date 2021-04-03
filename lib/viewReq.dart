@@ -17,6 +17,41 @@ class reqView extends StatefulWidget {
   }
 }
 
+void updategroups(request r) {
+  DatabaseReference Dbref =
+      FirebaseDatabase.instance.reference().child("groups").child(r.gID);
+  Dbref.once().then((DataSnapshot snapshot) {
+    var keys = snapshot.value.keys;
+    var values = snapshot.value;
+    var c = values['count'];
+    DatabaseReference Dbre =
+        FirebaseDatabase.instance.reference().child("rooms").child(r.cID);
+    Dbre.once().then((DataSnapshot dataSnapSho1) {
+      var dbreK = dataSnapSho1.value.keys;
+      var dbreV = dataSnapSho1.value;
+      var spg = dbreV['SPG'];
+      if (c + 1 <= spg) {
+        Dbref.update({'count': (c + 1)});
+
+        print(spg);
+        DatabaseReference Db = FirebaseDatabase.instance
+            .reference()
+            .child("users")
+            .child(FirebaseAuth.instance.currentUser.uid);
+        Db.once().then((DataSnapshot dataSnapSho) {
+          var fn = dataSnapSho.value['fname'];
+          var ln = dataSnapSho.value['lname'];
+          Dbref.child("members").update({
+            FirebaseAuth.instance.currentUser.uid.toString(): fn + " " + ln
+          });
+          Db.child("groups").set({r.gID: false});
+          Db.child("rooms").update({r.cID: r.gID});
+        });
+      }
+    });
+  });
+}
+
 class _reqView extends State<reqView> {
   _reqView({this.rid});
   final rid;
@@ -138,10 +173,15 @@ class _reqView extends State<reqView> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Text(
-                  rEQ.msg,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20),
+                Container(
+                  width: MediaQuery.of(context).size.width - 40,
+                  child: Wrap(children: [
+                    Text(
+                      rEQ.msg,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ]),
                 ),
               ],
             ),
@@ -158,7 +198,9 @@ class _reqView extends State<reqView> {
                       icon: Icon(Icons.check_circle_outline),
                       iconSize: 70,
                       color: Colors.green,
-                      onPressed: () {}),
+                      onPressed: () {
+                        updategroups(rEQ);
+                      }),
                   Text(
                     "Accept",
                     style: TextStyle(fontWeight: FontWeight.bold),
@@ -172,9 +214,11 @@ class _reqView extends State<reqView> {
                       icon: Icon(Icons.highlight_off_rounded),
                       iconSize: 70,
                       color: Colors.red,
-                      onPressed: () {}),
+                      onPressed: () {
+                        //if g
+                      }),
                   Text(
-                    "Accept",
+                    "Decline",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],
