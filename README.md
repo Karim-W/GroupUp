@@ -1,16 +1,7 @@
 # GroupUp
 
-A new Flutter project.
+The application aims to help students group up and select their teamsmates in a group project.
+#Homepage
+![Simulator Screen Shot - iPhone 12 Pro Max - 2021-04-03 at 14 50 42](https://user-images.githubusercontent.com/64778200/114302443-14f3c480-9ada-11eb-8084-daceb473f341.png)
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
